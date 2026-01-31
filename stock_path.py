@@ -6,13 +6,15 @@ import matplotlib.pyplot as plt
 
 
 def main():
+    seed = 42
+
     pref = input_preference()
     if pref == "manual":
         S0, mu, sigma, T, n = manual_input()
     else:
         ticker, S0, T, n = market_input()
         mu, sigma = calculate_mu_and_sigma(ticker, T)
-    return stock_path(S0, mu, sigma, T, n)
+    return stock_path(S0, mu, sigma, T, n, seed=seed)
 
 
 def stock_path(S0, mu, sigma, T, n, seed=None):
@@ -72,7 +74,7 @@ def stock_path(S0, mu, sigma, T, n, seed=None):
     return {"paths": S, "t": t, "ST_mean": ST_mean, "ES": ES}
 
 
-def input_preference():
+def input_preference() -> str:
     while True:
         preference = input("State your input preference (either manual or market data): ").strip().lower()
         try:
@@ -112,7 +114,7 @@ def market_input():
         return tick, S0, T, n
 
 
-def calculate_mu_and_sigma(ticker, T):
+def calculate_mu_and_sigma(ticker:str , T:int) -> float:
     df = yf.download(ticker, period="1y", interval="1d")
     returns = np.log(df['Close']/df['Close'].shift(1)).dropna()
     mu = returns.mean().item()
